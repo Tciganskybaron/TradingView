@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
 
-const useChartData = () => {
+const useChartData = interval => {
 	const [data, setData] = useState([]);
 
 	useEffect(() => {
@@ -10,7 +10,7 @@ const useChartData = () => {
 			const response = await axios.get('https://api.binance.com/api/v3/klines', {
 				params: {
 					symbol: 'SOLUSDT',
-					interval: '1m',
+					interval,
 					limit: 150,
 				},
 			});
@@ -27,10 +27,10 @@ const useChartData = () => {
 		};
 
 		fetchHistoricalData();
-	}, []);
+	}, [interval]);
 
 	useEffect(() => {
-		const client = new W3CWebSocket('wss://stream.binance.com:9443/ws/solusdt@kline_1m');
+		const client = new W3CWebSocket(`wss://stream.binance.com:9443/ws/solusdt@kline_${interval}`);
 
 		client.onmessage = message => {
 			const json = JSON.parse(message.data);
@@ -54,7 +54,7 @@ const useChartData = () => {
 		};
 
 		return () => client.close();
-	}, []);
+	}, [interval]);
 
 	return data;
 };
