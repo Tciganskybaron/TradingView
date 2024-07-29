@@ -1,6 +1,5 @@
 import React from "react";
-import { Button } from './Component/Button/Button';
-import { Chart } from './Component/Chart/Chart';
+import { Chart } from './Component';
 
 const initialData = [
     { time: '2018-12-22', value: 32.51 },
