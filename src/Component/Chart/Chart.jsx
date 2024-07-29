@@ -6,10 +6,9 @@ export function Chart (props) {
         data,
         colors: {
             backgroundColor = 'white',
-            lineColor = '#2962FF',
             textColor = 'black',
-            areaTopColor = '#2962FF',
-            areaBottomColor = 'rgba(41, 98, 255, 0.28)',
+            candleUpColor = '#4CAF50',
+            candleDownColor = '#F44336',
         } = {},
     } = props;
 
@@ -31,18 +30,23 @@ export function Chart (props) {
             });
             chart.timeScale().fitContent();
 
-            const newSeries = chart.addAreaSeries({ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor });
+            const newSeries = chart.addCandlestickSeries({
+                upColor: candleUpColor,
+                downColor: candleDownColor,
+                borderVisible: false,
+                wickUpColor: candleUpColor,
+                wickDownColor: candleDownColor,
+            });
             newSeries.setData(data);
 
             window.addEventListener('resize', handleResize);
 
             return () => {
                 window.removeEventListener('resize', handleResize);
-
                 chart.remove();
             };
         },
-        [data, backgroundColor, lineColor, textColor, areaTopColor, areaBottomColor]
+        [data, backgroundColor, textColor, candleUpColor, candleDownColor]
     );
 
     return (
