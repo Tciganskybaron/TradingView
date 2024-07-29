@@ -2,9 +2,10 @@ import { createChart, ColorType } from 'lightweight-charts';
 import React, { useEffect, useRef, useState } from 'react';
 import useChartData from '../../hooks/useChartData';
 
-export function Chart (props) {
+export function Chart(props) {
 	const {
 		interval,
+		coin,
 		colors: {
 			backgroundColor = 'white',
 			textColor = 'black',
@@ -14,7 +15,8 @@ export function Chart (props) {
 	} = props;
 
 	const chartContainerRef = useRef();
-	const data = useChartData(interval);
+	const data = useChartData(interval, coin);
+	console.log('coin', coin)
 	const [chart, setChart] = useState(null);
 	const [series, setSeries] = useState(null);
 
@@ -43,8 +45,6 @@ export function Chart (props) {
 			wickDownColor: candleDownColor,
 		});
 
-		newSeries.setData(data);
-
 		setChart(newChart);
 		setSeries(newSeries);
 
@@ -62,9 +62,26 @@ export function Chart (props) {
 		}
 	}, [data, series]);
 
+	useEffect(() => {
+		if (chart && series) {
+			series.setData([]);
+			chart.removeSeries(series);
+			const newSeries = chart.addCandlestickSeries({
+				upColor: candleUpColor,
+				downColor: candleDownColor,
+				borderVisible: false,
+				wickUpColor: candleUpColor,
+				wickDownColor: candleDownColor,
+			});
+			newSeries.setData(data);
+			setSeries(newSeries);
+			chart.timeScale().fitContent();
+		}
+	}, [coin, interval]);
+
 	return (
 		<div>
 			<div ref={chartContainerRef} />
 		</div>
 	);
-};
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 const INTERVALS = [
 	{ label: '1 Minute', value: '1m' },
@@ -9,7 +9,7 @@ const INTERVALS = [
 ];
 
 export function RangeSwitcher(props) {
-	const{ setInterval } = props;
+	const { setInterval } = props;
 	return (
 		<div>
 			{INTERVALS.map(intervalOption => (
