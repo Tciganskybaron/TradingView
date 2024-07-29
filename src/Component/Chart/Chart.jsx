@@ -1,6 +1,6 @@
 import { createChart, ColorType } from 'lightweight-charts';
-import React, { useEffect, useRef } from 'react';
-import useChartData from "../../hooks/useChartData"
+import React, { useEffect, useRef, useState } from 'react';
+import useChartData from '../../hooks/useChartData';
 
 export function Chart (props) {
     const {
@@ -13,41 +13,53 @@ export function Chart (props) {
     } = props;
 
     const chartContainerRef = useRef();
-
-		const data = useChartData();
-
+    const [chart, setChart] = useState(null);
+    const [series, setSeries] = useState(null);
+    const data = useChartData();
 
     useEffect(() => {
         const handleResize = () => {
-            chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+            if (chart) {
+                chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+            }
         };
 
-        const chart = createChart(chartContainerRef.current, {
+        const newChart = createChart(chartContainerRef.current, {
             layout: {
                 background: { type: ColorType.Solid, color: backgroundColor },
                 textColor,
             },
-            width: chartContainerRef.current.clientWidth / 2,
+            width: chartContainerRef.current.clientWidth,
             height: 300,
         });
-        chart.timeScale().fitContent();
 
-        const newSeries = chart.addCandlestickSeries({
+        newChart.timeScale().fitContent();
+        const newSeries = newChart.addCandlestickSeries({
             upColor: candleUpColor,
             downColor: candleDownColor,
             borderVisible: false,
             wickUpColor: candleUpColor,
             wickDownColor: candleDownColor,
         });
+
         newSeries.setData(data);
+
+        setChart(newChart);
+        setSeries(newSeries);
 
         window.addEventListener('resize', handleResize);
 
         return () => {
             window.removeEventListener('resize', handleResize);
-            chart.remove();
+            newChart.remove();
         };
-    }, [data, backgroundColor, textColor, candleUpColor, candleDownColor]);
+    }, []);
+
+    useEffect(() => {
+        if (series) {
+            series.setData(data);
+        }
+    }, [data, series]);
 
     return (
         <div ref={chartContainerRef} />
