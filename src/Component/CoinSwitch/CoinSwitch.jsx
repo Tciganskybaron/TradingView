@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
-import styles from './CoinSwitch.module.css';
-import cn from 'classnames';
+import { COINS } from '../constants/coins';
+import { ButtonGroup } from './ButtonGroup';
 
-const COINS = [
-	{ label: 'Solana', value: 'SOLUSDT' },
-	{ label: 'Ethereum', value: 'ETHUSDT' },
-	{ label: 'Bitcoin', value: 'BTCUSDT' },
-];
-
-export function CoinSwitch(props) {
-	const { setCoin } = props;
+export function CoinSwitch({ setCoin }) {
 	const [selectedCoin, setSelectedCoin] = useState('SOLUSDT');
 
 	const handleCoinChange = (value) => {
@@ -18,18 +11,10 @@ export function CoinSwitch(props) {
 	};
 
 	return (
-		<div className={styles.buttonGroup}>
-			{COINS.map(coinOption => (
-				<button
-					key={coinOption.value}
-					className={cn(styles.button, {
-						[styles.active]: selectedCoin === coinOption.value,
-					})}
-					onClick={() => handleCoinChange(coinOption.value)}
-				>
-					{coinOption.label}
-				</button>
-			))}
-		</div>
+		<ButtonGroup
+			options={COINS}
+			selectedValue={selectedCoin}
+			onChange={handleCoinChange}
+		/>
 	);
 }

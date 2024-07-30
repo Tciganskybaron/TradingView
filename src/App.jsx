@@ -7,16 +7,16 @@ export default function App() {
 	const [coin, setCoin] = useState('SOLUSDT');
 
 	return (
-		<div className={styles.main} >
+		<div className={styles.main}>
 			<div className={styles.box}>
-			  <div className={styles.control}>
-			    <RangeSwitcher setInterval={setInterval} />
-			    <CoinSwitch setCoin={setCoin} />
-			  </div>
-			  <Chart interval={interval} coin={coin}/> 
+				<div className={styles.control}>
+					<RangeSwitcher setInterval={setInterval} />
+					<CoinSwitch setCoin={setCoin} />
+				</div>
+				<Chart interval={interval} coin={coin}/> 
 			</div>
 		</div>
 	);
-
 }
+
 
