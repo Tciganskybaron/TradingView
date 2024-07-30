@@ -6,16 +6,20 @@ export function Chart(props) {
 	const {
 		interval,
 		coin,
+		chartType,
 		colors: {
 			backgroundColor = 'white',
 			textColor = 'black',
 			candleUpColor = '#4CAF50',
+			lineColor = '#2962FF',
 			candleDownColor = '#F44336',
+			areaTopColor = '#2962FF',
+			areaBottomColor = 'rgba(41, 98, 255, 0.28)',
 		} = {},
 	} = props;
 
 	const chartContainerRef = useRef();
-	const data = useChartData(interval, coin);
+	const data = useChartData(interval, coin, chartType);
 	const [chart, setChart] = useState(null);
 	const [series, setSeries] = useState(null);
 
@@ -36,16 +40,7 @@ export function Chart(props) {
 		});
 
 		newChart.timeScale().fitContent();
-		const newSeries = newChart.addCandlestickSeries({
-			upColor: candleUpColor,
-			downColor: candleDownColor,
-			borderVisible: false,
-			wickUpColor: candleUpColor,
-			wickDownColor: candleDownColor,
-		});
-
 		setChart(newChart);
-		setSeries(newSeries);
 
 		window.addEventListener('resize', handleResize);
 
@@ -56,31 +51,28 @@ export function Chart(props) {
 	}, []);
 
 	useEffect(() => {
-		if (series) {
-			series.setData(data);
-		}
-	}, [data, series]);
+		if (chart) {
+			if (series) {
+				chart.removeSeries(series);
+			}
 
-	useEffect(() => {
-		if (chart && series) {
-			series.setData([]);
-			chart.removeSeries(series);
-			const newSeries = chart.addCandlestickSeries({
-				upColor: candleUpColor,
-				downColor: candleDownColor,
-				borderVisible: false,
-				wickUpColor: candleUpColor,
-				wickDownColor: candleDownColor,
-			});
+			const newSeries = chartType === 'candlestick'
+				? chart.addCandlestickSeries({
+					upColor: candleUpColor,
+					downColor: candleDownColor,
+					borderVisible: false,
+					wickUpColor: candleUpColor,
+					wickDownColor: candleDownColor,
+				})
+				: chart.addAreaSeries({ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor });
+
 			newSeries.setData(data);
 			setSeries(newSeries);
 			chart.timeScale().fitContent();
 		}
-	}, [coin, interval]);
+	}, [chart, chartType, data]);
 
 	return (
-		<div ref={chartContainerRef} style={{ width: '100%', height: '300px' }}>
-			<div ref={chartContainerRef} />
-		</div>
+		<div ref={chartContainerRef} style={{ width: '100%', height: '300px' }} />
 	);
 }

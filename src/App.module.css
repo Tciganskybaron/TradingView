@@ -10,11 +10,16 @@
 	width: 100%;
 	max-width: 1000px;
 	margin: 0 auto;
+	border: solid 1px #ddd;
+	padding: 30px 50px 30px 50px;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	background-color: #fff;
 }
 
 .control {
 	display: flex;
-	gap: 50px;
+	gap: 20px;
 	justify-content: end;
-	margin-bottom: 20px;
+	margin-bottom: 30px;
 }
