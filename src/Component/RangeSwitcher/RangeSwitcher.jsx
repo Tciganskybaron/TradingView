@@ -26,7 +26,6 @@ export function RangeSwitcher(props) {
 					key={intervalOption.value}
 					className={cn(styles.button, {
 						[styles.active]: selectedInterval === intervalOption.value,
-
 					})}
 					onClick={() => handleIntervalChange(intervalOption.value)}
 				>
