@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Chart, RangeSwitcher, CoinSwitch } from './Component';
+import { Chart, RangeSwitcher, CoinSwitcher } from './component';
 import styles from './App.module.css';
 
 export default function App() {
@@ -11,7 +11,7 @@ export default function App() {
 			<div className={styles.box}>
 				<div className={styles.control}>
 					<RangeSwitcher setInterval={setInterval} />
-					<CoinSwitch setCoin={setCoin} />
+					<CoinSwitcher setCoin={setCoin} />
 				</div>
 				<Chart interval={interval} coin={coin}/> 
 			</div>

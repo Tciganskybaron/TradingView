@@ -1,3 +1,4 @@
 export { Chart } from './Chart/Chart';
 export { RangeSwitcher } from './RangeSwitcher/RangeSwitcher';
-export { CoinSwitch } from './CoinSwitch/CoinSwitch';
+export { CoinSwitcher } from './CoinSwitcher/CoinSwitcher';
+export { ButtonGroup } from './ButtonGroup/ButtonGroup';

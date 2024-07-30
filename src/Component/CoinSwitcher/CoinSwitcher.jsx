@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { COINS } from '../constants/coins';
-import { ButtonGroup } from './ButtonGroup';
+import { COINS } from '../../constants/coins';
+import { ButtonGroup } from '../../component';
 
-export function CoinSwitch({ setCoin }) {
+export function CoinSwitcher({ setCoin }) {
 	const [selectedCoin, setSelectedCoin] = useState('SOLUSDT');
 
 	const handleCoinChange = (value) => {

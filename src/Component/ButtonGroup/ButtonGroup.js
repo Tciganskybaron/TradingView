@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
-import { INTERVALS } from '../constants/intervals';
-import { ButtonGroup } from './ButtonGroup';
+import React from 'react';
+import styles from './ButtonGroup.module.css';
+import cn from 'classnames';
 
-export function RangeSwitcher({ setInterval }) {
-	const [selectedInterval, setSelectedInterval] = useState('1m');
-
-	const handleIntervalChange = (value) => {
-		setSelectedInterval(value);
-		setInterval(value);
-	};
-
+export function ButtonGroup({ options, selectedValue, onChange }) {
 	return (
-		<ButtonGroup
-			options={INTERVALS}
-			selectedValue={selectedInterval}
-			onChange={handleIntervalChange}
-		/>
+		<div className={styles.buttonGroup}>
+			{options.map(option => (
+				<button
+					key={option.value}
+					className={cn(styles.button, {
+						[styles.active]: selectedValue === option.value,
+					})}
+					onClick={() => onChange(option.value)}
+				>
+					{option.label}
+				</button>
+			))}
+		</div>
 	);
 }

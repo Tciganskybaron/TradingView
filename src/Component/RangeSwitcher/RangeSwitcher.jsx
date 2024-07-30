@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { INTERVALS } from '../constants/intervals';
-import { ButtonGroup } from './ButtonGroup';
+import { INTERVALS } from '../../constants/Intervals';
+import { ButtonGroup } from '../index';
 
 export function RangeSwitcher({ setInterval }) {
 	const [selectedInterval, setSelectedInterval] = useState('1m');
