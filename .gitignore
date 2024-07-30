@@ -1,6 +1,7 @@
 # Default
 node_modules
 .env
+
 # Dependency directories
 node_modules/
 jspm_packages/
@@ -8,6 +9,7 @@ jspm_packages/
 # Parcel
 dist
 .cache
+.parcel-cache
 
 # Logs
 logs

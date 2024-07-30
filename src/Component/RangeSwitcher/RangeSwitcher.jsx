@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './RangeSwitcher.module.css';
+import cn from 'classnames';
 
 const INTERVALS = [
 	{ label: '1M', value: '1m' },
@@ -23,7 +24,10 @@ export function RangeSwitcher(props) {
 			{INTERVALS.map(intervalOption => (
 				<button
 					key={intervalOption.value}
-					className={`${styles.button} ${selectedInterval === intervalOption.value ? styles.active : ''}`}
+					className={cn(styles.button, {
+						[styles.active]: selectedInterval === intervalOption.value,
+
+					})}
 					onClick={() => handleIntervalChange(intervalOption.value)}
 				>
 					{intervalOption.label}
