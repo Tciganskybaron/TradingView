@@ -16,7 +16,6 @@ export function Chart(props) {
 
 	const chartContainerRef = useRef();
 	const data = useChartData(interval, coin);
-	console.log('coin', coin)
 	const [chart, setChart] = useState(null);
 	const [series, setSeries] = useState(null);
 
@@ -32,7 +31,7 @@ export function Chart(props) {
 				background: { type: ColorType.Solid, color: backgroundColor },
 				textColor,
 			},
-			width: chartContainerRef.current.clientWidth / 1.5,
+			width: chartContainerRef.current.clientWidth,
 			height: 300,
 		});
 
@@ -80,7 +79,7 @@ export function Chart(props) {
 	}, [coin, interval]);
 
 	return (
-		<div>
+		<div ref={chartContainerRef} style={{ width: '100%', height: '300px' }}>
 			<div ref={chartContainerRef} />
 		</div>
 	);

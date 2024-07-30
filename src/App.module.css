@@ -1,0 +1,19 @@
+.main {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+}
+
+.box {
+	width: 100%;
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+.control {
+	display: flex;
+	gap: 50px;
+	justify-content: end;
+}
