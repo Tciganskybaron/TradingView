@@ -1,0 +1,34 @@
+.buttonGroup {
+	display: flex;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	overflow: hidden;
+	background-color: #F0F5F9;
+}
+
+.button {
+	flex: 1;
+	padding: 10px 20px;
+	background-color: #F0F5F9;
+	color: #333;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+	font-size: 14px;
+}
+
+.button:hover {
+	background-color: #e6e6e6;
+	color: #000;
+}
+
+.button.active {
+	background-color: #fff;
+	color: #000;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.button:not(:last-child) {
+	border-right: 1px solid #ddd;
+}
