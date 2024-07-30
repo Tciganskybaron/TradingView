@@ -1,5 +1,6 @@
 import { createChart, ColorType } from 'lightweight-charts';
 import React, { useEffect, useRef, useState } from 'react';
+import styles from './Chart.module.css';
 import useChartData from '../../hooks/useChartData';
 import useChart from "../../store/chart";
 
@@ -37,6 +38,9 @@ export function Chart(props) {
 			},
 			width: chartContainerRef.current.clientWidth,
 			height: 300,
+			localization: {
+				locale: 'en-US',
+			}
 		});
 
 		newChart.timeScale().fitContent();
@@ -73,6 +77,6 @@ export function Chart(props) {
 	}, [chart, chartType, data]);
 
 	return (
-		<div ref={chartContainerRef} style={{ width: '100%', height: '300px' }} />
+		<div ref={chartContainerRef} className={styles.chart} />
 	);
 }
