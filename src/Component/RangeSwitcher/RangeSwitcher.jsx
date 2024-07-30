@@ -1,19 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
+import styles from './RangeSwitcher.module.css';
 
 const INTERVALS = [
-	{ label: '1 Minute', value: '1m' },
-	{ label: '5 Minutes', value: '5m' },
-	{ label: '15 Minutes', value: '15m' },
-	{ label: '1 Hour', value: '1h' },
-	{ label: '1 Day', value: '1d' },
+	{ label: '1M', value: '1m' },
+	{ label: '5M', value: '5m' },
+	{ label: '15M', value: '15m' },
+	{ label: '1H', value: '1h' },
+	{ label: '1D', value: '1d' },
 ];
 
 export function RangeSwitcher(props) {
 	const { setInterval } = props;
+	const [selectedInterval, setSelectedInterval] = useState('1m');
+
+	const handleIntervalChange = (value) => {
+		setSelectedInterval(value);
+		setInterval(value);
+	};
+
 	return (
-		<div>
+		<div className={styles.buttonGroup}>
 			{INTERVALS.map(intervalOption => (
-				<button key={intervalOption.value} onClick={() => setInterval(intervalOption.value)}>
+				<button
+					key={intervalOption.value}
+					className={`${styles.button} ${selectedInterval === intervalOption.value ? styles.active : ''}`}
+					onClick={() => handleIntervalChange(intervalOption.value)}
+				>
 					{intervalOption.label}
 				</button>
 			))}
