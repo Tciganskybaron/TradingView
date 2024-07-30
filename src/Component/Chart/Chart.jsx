@@ -1,12 +1,10 @@
 import { createChart, ColorType } from 'lightweight-charts';
 import React, { useEffect, useRef, useState } from 'react';
 import useChartData from '../../hooks/useChartData';
+import useChart from "../../store/chart";
 
 export function Chart(props) {
 	const {
-		interval,
-		coin,
-		chartType,
 		colors: {
 			backgroundColor = 'white',
 			textColor = 'black',
@@ -17,6 +15,8 @@ export function Chart(props) {
 			areaBottomColor = 'rgba(41, 98, 255, 0.28)',
 		} = {},
 	} = props;
+
+	const { interval, coin, chartType } = useChart((state) => state);
 
 	const chartContainerRef = useRef();
 	const data = useChartData(interval, coin, chartType);

@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { COINS } from '../../constants/coins';
 import { ButtonGroup } from '../../component';
+import useChart from "../../store/chart";
 
-export function CoinSwitcher({ setCoin }) {
-	const [selectedCoin, setSelectedCoin] = useState('SOLUSDT');
+export function CoinSwitcher() {
+	const { coin, setCoin } = useChart((state) => state);
 
 	const handleCoinChange = (value) => {
-		setSelectedCoin(value);
 		setCoin(value);
 	};
 
 	return (
 		<ButtonGroup
 			options={COINS}
-			selectedValue={selectedCoin}
+			selectedValue={coin}
 			onChange={handleCoinChange}
 		/>
 	);

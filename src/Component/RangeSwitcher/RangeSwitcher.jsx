@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { INTERVALS } from '../../constants/Intervals';
 import { ButtonGroup } from '../index';
+import useChart from "../../store/chart";
 
-export function RangeSwitcher({ setInterval }) {
-	const [selectedInterval, setSelectedInterval] = useState('1m');
+export function RangeSwitcher() {
+	const { interval,setInterval } = useChart((state) => state);
 
 	const handleIntervalChange = (value) => {
-		setSelectedInterval(value);
 		setInterval(value);
 	};
 
 	return (
 		<ButtonGroup
 			options={INTERVALS}
-			selectedValue={selectedInterval}
+			selectedValue={interval}
 			onChange={handleIntervalChange}
 		/>
 	);

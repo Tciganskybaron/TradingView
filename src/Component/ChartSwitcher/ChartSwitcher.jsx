@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { CHART } from '../../constants/charts';
 import { ButtonGroup } from '../../component';
+import useChart from "../../store/chart";
 
-export function ChartSwitcher({ setChartType }) {
-	const [selectedChartType, setSelectedChartType] = useState('candlestick');
+export function ChartSwitcher() {
+	const { chartType, setChartType } = useChart((state) => state);
 
 	const handleChartTypeChange = (value) => {
-		setSelectedChartType(value);
 		setChartType(value);
 	};
 
 return (
 		<ButtonGroup
 			options={CHART}
-			selectedValue={selectedChartType}
+			selectedValue={chartType}
 			onChange={handleChartTypeChange}
 		/>
 	);

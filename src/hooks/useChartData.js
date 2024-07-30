@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
+import { LIMIT } from '../constants/limit'
 
 const useChartData = (interval, coin, chartType) => {
 	const [data, setData] = useState([]);
@@ -11,7 +12,7 @@ const useChartData = (interval, coin, chartType) => {
 				params: {
 					symbol: coin,
 					interval,
-					limit: 150,
+					limit: LIMIT,
 				},
 			});
 
