@@ -4,13 +4,14 @@ import { ButtonGroup } from '../../component';
 import useChart from "../../store/chart";
 
 export function ChartSwitcher() {
-	const { chartType, setChartType } = useChart((state) => state);
+	const chartType = useChart((state) => state.chartType);
+	const setChartType = useChart((state) => state.setChartType);
 
 	const handleChartTypeChange = (value) => {
 		setChartType(value);
 	};
 
-return (
+  return (
 		<ButtonGroup
 			options={CHART}
 			selectedValue={chartType}

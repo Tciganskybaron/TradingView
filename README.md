@@ -1,45 +1,40 @@
-# React Parcel Starter Kit
+# Приложение для отслеживания криптовалютных графиков
 
-This is a minimal React starter project that uses the [Parcel JS](https://www.parceljs.org) to build the project. Only React and React DOM modules have been installed.
+Приложение позволяет пользователям отслеживать графики криптовалют для Solana, Ethereum и Bitcoin. Пользователи могут выбирать временной интервал и тип графика (свечной или линейный) для визуализации данных. Приложение удобно и интуитивно понятно, что делает его отличным инструментом для анализа криптовалют.
 
-## Prerequisites
+## Демонстрация
 
-- Install latest [Node.js LTS version](https://nodejs.org/en/download/)
-- Install latest version of [Yarn](https://classic.yarnpkg.com/en/)
+<p align="left">
+ <img width="600" src="assets/chart.gif" alt="demo"/>
+</p>
 
-Do note if you use `npm`, a different lock file will be created. If you wish to use `npm` instead of Yarn, then delete `yarn.lock` file. Don't mix package managers.
+## Стартовый комплект React Parcel с Lightweight Charts
 
-## How to setup a project
+Этот проект представляет собой минимальный стартовый проект React, который использует [Parcel JS](https://www.parceljs.org) для сборки проекта. Он основан на [простом примере React](https://tradingview.github.io/lightweight-charts/tutorials/react/simple) из документации TradingView Lightweight Charts.
 
-First create a **completely blank** GitHub/BitBucket repository on your account. Then execute the following commands to install blank new React project in your machine:
+## Стек технологий
 
-```bash
-# Replace `projectName` with a name of your choice
-$ git clone git@github.com:brandiqa/react-parcel-starter.git projectName
-$ cd projectName
-$ git remote rm origin
-# Replace `username` and `repositoryName` with your values
-$ git remote add origin git@github.com:username/repositoryName.git
-$ git config master.remote origin
-$ git config master.merge refs/heads/master
-$ git push -u origin master
-$ npm install
+- **React**: JavaScript-библиотека для создания пользовательских интерфейсов
+- **Parcel**: Быстрый веб-пакет для быстрой сборки проектов
+- **Lightweight Charts**: Библиотека для создания высококачественных графиков
+- **Axios**: Библиотека для выполнения HTTP-запросов
+- **Zustand**: Легковесный менеджер состояния
+- **Binance API**: Источник данных для криптовалют
+- **WebSocket**: Для получения данных в реальном времени
 
-```
+## Установка и запуск
 
-## How to run
+### Предварительные требования
 
-After you have completed the above steps. You'll need to install the dependencies first before you start the dev server.
+- Установите последнюю [LTS версию Node.js](https://nodejs.org/en/download/)
+- Установите последнюю версию [npm](https://www.npmjs.com/)
+
+### Как запустить
+
+После завершения вышеуказанных шагов, установите зависимости и запустите сервер разработки:
 
 ```bash
 npm install
 npm start
 ```
 
-## Miscellaneous
-
-Open the file `package.json` and update the repository details. You may also need to update the dependencies manually if a major version has been release.
-
-## Contribution
-
-Simply create a fork of this project. Do your contribution on a separate branch then submit a pull request for review.

@@ -4,7 +4,8 @@ import { ButtonGroup } from '../../component';
 import useChart from "../../store/chart";
 
 export function CoinSwitcher() {
-	const { coin, setCoin } = useChart((state) => state);
+	const coin = useChart((state) => state.coin);
+	const setCoin = useChart((state) => state.setCoin);
 
 	const handleCoinChange = (value) => {
 		setCoin(value);

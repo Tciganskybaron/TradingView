@@ -4,7 +4,8 @@ import { ButtonGroup } from '../index';
 import useChart from "../../store/chart";
 
 export function RangeSwitcher() {
-	const { interval,setInterval } = useChart((state) => state);
+	const interval = useChart((state) => state.interval);
+	const setInterval = useChart((state) => state.setInterval);
 
 	const handleIntervalChange = (value) => {
 		setInterval(value);
