@@ -29,6 +29,15 @@
 - Установите последнюю [LTS версию Node.js](https://nodejs.org/en/download/)
 - Установите последнюю версию [npm](https://www.npmjs.com/)
 
+### Как установить
+
+Скачайте себе репозиторй
+
+```bash
+ git clone git@github.com:Tciganskybaron/TradingView.git
+ cd your-repo-directory
+```
+
 ### Как запустить
 
 После завершения вышеуказанных шагов, установите зависимости и запустите сервер разработки:
