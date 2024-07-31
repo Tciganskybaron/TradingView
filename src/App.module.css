@@ -23,3 +23,13 @@
 	justify-content: end;
 	margin-bottom: 30px;
 }
+
+@media (max-width: 1000px) {
+	.box {
+		padding: 5px;
+	}
+
+	.control {
+		flex-direction: column;
+	}
+}

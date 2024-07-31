@@ -1,1 +1,4 @@
-export const LIMIT = 150
+export const LIMIT = {
+	desktop: 150,
+	mobile: 50,
+};

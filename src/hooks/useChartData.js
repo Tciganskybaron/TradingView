@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
-import { LIMIT } from '../constants/limit'
+import { LIMIT } from '../constants/limit';
 
-const useChartData = (interval, coin, chartType) => {
+const useChartData = (interval, coin, chartType, width) => {
 	const [data, setData] = useState([]);
 
 	useEffect(() => {
@@ -12,7 +12,7 @@ const useChartData = (interval, coin, chartType) => {
 				params: {
 					symbol: coin,
 					interval,
-					limit: LIMIT,
+					limit: width > '1000' ? LIMIT.desktop : LIMIT.mobile,
 				},
 			});
 
@@ -36,7 +36,7 @@ const useChartData = (interval, coin, chartType) => {
 		};
 
 		fetchHistoricalData();
-	}, [interval, coin, chartType]);
+	}, [interval, coin, chartType, width]);
 
 	useEffect(() => {
 		const client = new W3CWebSocket(`wss://stream.binance.com:9443/ws/${coin.toLowerCase()}@kline_${interval}`);
