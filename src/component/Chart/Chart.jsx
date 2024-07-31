@@ -29,7 +29,7 @@ export function Chart(props) {
     useEffect(() => {
         const handleResize = () => {
             if (chart) {
-                chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+                chart.applyOptions({ width: chartContainerRef.current.clientWidth, height: chartContainerRef.current.clientHeight });
                 chart.timeScale().fitContent();
             }
         };
@@ -40,7 +40,7 @@ export function Chart(props) {
                 textColor,
             },
             width: chartContainerRef.current.clientWidth,
-            height: 300,
+            height: chartContainerRef.current.clientHeight,
             localization: {
                 locale: 'en-US',
             }
@@ -81,7 +81,7 @@ export function Chart(props) {
 
     useEffect(() => {
         if (chart) {
-            chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+            chart.applyOptions({ width: chartContainerRef.current.clientWidth, height: chartContainerRef.current.clientHeight });
             chart.timeScale().fitContent();
         }
     }, [width]);

@@ -32,3 +32,10 @@
 .button:not(:last-child) {
 	border-right: 1px solid #ddd;
 }
+
+
+@media (max-width: 1000px) {
+	.button {
+		padding: 5px 10px;
+	}
+}
