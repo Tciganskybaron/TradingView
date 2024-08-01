@@ -21,7 +21,7 @@ export function Chart(props) {
 
     const chartContainerRef = useRef();
     const width = useResize();
-    const data = useChartData(interval, coin, chartType, width);
+    const { data, isLoading } = useChartData(interval, coin, chartType, width);
 
     const [chart, setChart] = useState(null);
     const [series, setSeries] = useState(null);
@@ -58,7 +58,11 @@ export function Chart(props) {
     }, [backgroundColor, textColor]);
 
     useEffect(() => {
-        if (chart && !series) {
+        if (chart) {
+            if (series) {
+                chart.removeSeries(series);
+            }
+
             const newSeries = chartType === 'candlestick'
                 ? chart.addCandlestickSeries({
                     upColor: candleUpColor,
@@ -74,11 +78,11 @@ export function Chart(props) {
     }, [chart, chartType, candleUpColor, candleDownColor, lineColor, areaTopColor, areaBottomColor]);
 
     useEffect(() => {
-        if (series) {
+        if (series && !isLoading && data.length > 0) {
             series.setData(data);
             chart.timeScale().fitContent();
         }
-    }, [series, data]);
+    }, [series, data, isLoading]);
 
     useEffect(() => {
         if (chart) {

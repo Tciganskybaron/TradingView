@@ -5,9 +5,11 @@ import { LIMIT } from '../constants/limit';
 
 const useChartData = (interval, coin, chartType, width) => {
 	const [data, setData] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		const fetchHistoricalData = async () => {
+			setIsLoading(true);
 			const response = await axios.get('https://api.binance.com/api/v3/klines', {
 				params: {
 					symbol: coin,
@@ -33,6 +35,7 @@ const useChartData = (interval, coin, chartType, width) => {
 			}
 
 			setData(historicalData);
+			setIsLoading(false);
 		};
 
 		fetchHistoricalData();
@@ -73,7 +76,7 @@ const useChartData = (interval, coin, chartType, width) => {
 		return () => client.close();
 	}, [interval, coin, chartType]);
 
-	return data;
+	return { data, isLoading };
 };
 
 export default useChartData;
