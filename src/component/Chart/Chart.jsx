@@ -81,8 +81,12 @@ export function Chart(props) {
         if (series && !isLoading && data.length > 0) {
             series.setData(data);
             chart.timeScale().fitContent();
+
+            lineSeries.forEach((line) => {
+                line.series.setData([{ time: data[0].time, value: line.price }, { time: data[data.length - 1].time, value: line.price }]);
+            });
         }
-    }, [series, data, isLoading]);
+    }, [series, data, isLoading, lineSeries]);
 
     useEffect(() => {
         if (chart) {
@@ -100,7 +104,7 @@ export function Chart(props) {
             if (price) {
                 const line = chart.addLineSeries();
                 line.setData([{ time: data[0].time, value: price }, { time: data[data.length - 1].time, value: price }]);
-                setLineSeries([...lineSeries, line]);
+                setLineSeries({ series: line, price });
             }
             setIsAddingLine(false);
         }
