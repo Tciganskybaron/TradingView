@@ -17,7 +17,7 @@ export function Chart(props) {
             areaBottomColor = 'rgba(41, 98, 255, 0.28)',
         } = {},
     } = props;
-    const { interval, coin, chartType } = useChart((state) => state);
+    const { interval, coin, chartType, isAddingLine, setIsAddingLine, lineSeries, setLineSeries } = useChart((state) => state);
 
     const chartContainerRef = useRef();
     const width = useResize();
@@ -58,11 +58,7 @@ export function Chart(props) {
     }, [backgroundColor, textColor]);
 
     useEffect(() => {
-        if (chart) {
-            if (series) {
-                chart.removeSeries(series);
-            }
-
+        if (chart && !series) {
             const newSeries = chartType === 'candlestick'
                 ? chart.addCandlestickSeries({
                     upColor: candleUpColor,
@@ -73,11 +69,16 @@ export function Chart(props) {
                 })
                 : chart.addAreaSeries({ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor });
 
-            newSeries.setData(data);
             setSeries(newSeries);
+        }
+    }, [chart, chartType, candleUpColor, candleDownColor, lineColor, areaTopColor, areaBottomColor]);
+
+    useEffect(() => {
+        if (series) {
+            series.setData(data);
             chart.timeScale().fitContent();
         }
-    }, [chart, chartType, data, candleUpColor, candleDownColor, lineColor, areaTopColor, areaBottomColor]);
+    }, [series, data]);
 
     useEffect(() => {
         if (chart) {
@@ -86,7 +87,45 @@ export function Chart(props) {
         }
     }, [width]);
 
+    const addSupportResistanceLine = (event) => {
+        if (chart && isAddingLine) {
+            const boundingRect = chartContainerRef.current.getBoundingClientRect();
+            const y = event.clientY - boundingRect.top;
+
+            const price = series.coordinateToPrice(y);
+            if (price) {
+                const line = chart.addLineSeries();
+                line.setData([{ time: data[0].time, value: price }, { time: data[data.length - 1].time, value: price }]);
+                setLineSeries([...lineSeries, line]);
+            }
+            setIsAddingLine(false);
+        }
+    };
+
+    useEffect(() => {
+        const handleChartClick = (event) => {
+            addSupportResistanceLine(event);
+        };
+
+        if (chartContainerRef.current) {
+            chartContainerRef.current.addEventListener('click', handleChartClick);
+        }
+
+        return () => {
+            if (chartContainerRef.current) {
+                chartContainerRef.current.removeEventListener('click', handleChartClick);
+            }
+        };
+    }, [chart, data, lineSeries, isAddingLine]);
+
+    const handleAddLineButtonClick = () => {
+        setIsAddingLine(true);
+    };
+
     return (
-        <div ref={chartContainerRef} className={styles.chart} />
+        <div style={{ width: "100%", height: "100%" }}>
+            <button onClick={handleAddLineButtonClick}>Add Support/Resistance Line</button>
+            <div ref={chartContainerRef} className={styles.chart} />
+        </div>
     );
 }
