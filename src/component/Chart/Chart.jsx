@@ -26,6 +26,9 @@ export function Chart(props) {
     const chartRef = useRef(null);
     const seriesRef = useRef(null);
     const linesRef = useRef([]);
+    const [isDrawingTrendLine, setIsDrawingTrendLine] = useState(false);
+    const [trendLinePoints, setTrendLinePoints] = useState([]);
+    const trendLineSeriesRef = useRef(null);
 
     useEffect(() => {
         const newChart = createChart(chartContainerRef.current, {
@@ -107,21 +110,88 @@ export function Chart(props) {
         }
     }, [isAddingLine, setIsAddingLine, data]);
 
+    const startTrendLine = useCallback((event) => {
+        if (chartRef.current) {
+            const boundingRect = chartContainerRef.current.getBoundingClientRect();
+            const x = event.clientX - boundingRect.left;
+            const y = event.clientY - boundingRect.top;
+
+            const price = seriesRef.current.coordinateToPrice(y);
+            const time = chartRef.current.timeScale().coordinateToTime(x);
+
+            if (price !== null && time !== null) {
+                setTrendLinePoints([{ time, value: price }]);
+                trendLineSeriesRef.current = chartRef.current.addLineSeries();
+            }
+        }
+    }, []);
+
+    const finishTrendLine = useCallback((event) => {
+        if (chartRef.current && trendLinePoints.length === 1) {
+            const boundingRect = chartContainerRef.current.getBoundingClientRect();
+            const x = event.clientX - boundingRect.left;
+            const y = event.clientY - boundingRect.top;
+
+            const price = seriesRef.current.coordinateToPrice(y);
+            const time = chartRef.current.timeScale().coordinateToTime(x);
+
+            if (price !== null && time !== null) {
+                const finalTrendLinePoints = [trendLinePoints[0], { time, value: price }];
+                trendLineSeriesRef.current.setData(finalTrendLinePoints);
+                linesRef.current.push(trendLineSeriesRef.current);
+                setIsDrawingTrendLine(false);
+                setTrendLinePoints([]);
+            }
+        }
+    }, [trendLinePoints]);
+
+    const updateTrendLine = useCallback((event) => {
+        if (chartRef.current && trendLinePoints.length === 1) {
+            const boundingRect = chartContainerRef.current.getBoundingClientRect();
+            const x = event.clientX - boundingRect.left;
+            const y = event.clientY - boundingRect.top;
+
+            const price = seriesRef.current.coordinateToPrice(y);
+            const time = chartRef.current.timeScale().coordinateToTime(x);
+
+            if (price !== null && time !== null) {
+                const updatedPoints = [trendLinePoints[0], { time, value: price }];
+                trendLineSeriesRef.current.setData(updatedPoints);
+            }
+        }
+    }, [trendLinePoints]);
+
     useEffect(() => {
         const handleChartClick = (event) => {
-            addSupportResistanceLine(event);
+            if (isAddingLine) {
+                addSupportResistanceLine(event);
+            } else if (isDrawingTrendLine) {
+                if (trendLinePoints.length === 0) {
+                    startTrendLine(event);
+                } else if (trendLinePoints.length === 1) {
+                    finishTrendLine(event);
+                }
+            }
+        };
+
+        const handleMouseMove = (event) => {
+            if (isDrawingTrendLine && trendLinePoints.length === 1) {
+                updateTrendLine(event);
+            }
         };
 
         if (chartContainerRef.current) {
             chartContainerRef.current.addEventListener('click', handleChartClick);
+            chartContainerRef.current.addEventListener('mousemove', handleMouseMove);
         }
 
         return () => {
             if (chartContainerRef.current) {
                 chartContainerRef.current.removeEventListener('click', handleChartClick);
+                chartContainerRef.current.removeEventListener('mousemove', handleMouseMove);
             }
         };
-    }, [addSupportResistanceLine]);
+    }, [addSupportResistanceLine, startTrendLine, finishTrendLine, updateTrendLine, isAddingLine, isDrawingTrendLine, trendLinePoints]);
 
     useEffect(() => {
         if (coin) {
@@ -133,6 +203,10 @@ export function Chart(props) {
         setIsAddingLine(true);
     };
 
+    const handleAddTrendLineButtonClick = () => {
+        setIsDrawingTrendLine(true);
+    };
+
     const handleRemoveLinesButtonClick = useCallback(() => {
         linesRef.current.forEach(line => chartRef.current.removeSeries(line));
         linesRef.current = [];
@@ -142,6 +216,7 @@ export function Chart(props) {
         <div style={{ width: "100%", height: "100%" }}>
             <div>
                 <button onClick={handleAddLineButtonClick}>Add Support/Resistance Line</button>
+                <button onClick={handleAddTrendLineButtonClick}>Add Trend Line</button>
                 <button onClick={handleRemoveLinesButtonClick}>Remove All Lines</button>
             </div>
             <div ref={chartContainerRef} className={styles.chart} />
