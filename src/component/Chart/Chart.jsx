@@ -4,6 +4,7 @@ import styles from './Chart.module.css';
 import useChartData from '../../hooks/useChartData';
 import useResize from '../../hooks/useResize';
 import useChart from '../../store/chart';
+import { LineSwitcher } from '../index';
 
 export function Chart(props) {
     const {
@@ -213,12 +214,13 @@ export function Chart(props) {
     }, []);
 
     return (
-        <div style={{ width: "100%", height: "100%" }}>
-            <div>
-                <button onClick={handleAddLineButtonClick}>Add Support/Resistance Line</button>
-                <button onClick={handleAddTrendLineButtonClick}>Add Trend Line</button>
-                <button onClick={handleRemoveLinesButtonClick}>Remove All Lines</button>
-            </div>
+        <div style={{ width: "90%", height: "80%" }}>
+					   <LineSwitcher 
+						    handleAddLineButtonClick={handleAddLineButtonClick} 
+						    handleAddTrendLineButtonClick={handleAddTrendLineButtonClick}
+						    handleRemoveLinesButtonClick={handleRemoveLinesButtonClick} 
+						    selectedValue={isAddingLine ? 'addLine' : isDrawingTrendLine ? 'addTrendLine' : null}
+						 />
             <div ref={chartContainerRef} className={styles.chart} />
         </div>
     );
