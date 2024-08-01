@@ -18,18 +18,18 @@ export function Chart(props) {
             areaBottomColor = 'rgba(41, 98, 255, 0.28)',
         } = {},
     } = props;
-    const { interval, coin, chartType, isAddingLine, setIsAddingLine } = useChart((state) => state);
+    const { interval, coin, chartType, isAddingLine, setIsAddingLine, isDrawingTrendLine, setIsDrawingTrendLine, trendLinePoints, setTrendLinePoints } = useChart((state) => state);
 
     const chartContainerRef = useRef();
-    const width = useResize();
-    const { data, isLoading } = useChartData(interval, coin, chartType, width);
-
-    const chartRef = useRef(null);
+		const chartRef = useRef(null);
     const seriesRef = useRef(null);
     const linesRef = useRef([]);
-    const [isDrawingTrendLine, setIsDrawingTrendLine] = useState(false);
-    const [trendLinePoints, setTrendLinePoints] = useState([]);
-    const trendLineSeriesRef = useRef(null);
+		const trendLineSeriesRef = useRef(null);
+
+    const width = useResize();
+
+    const { data, isLoading } = useChartData(interval, coin, chartType, width);
+  
 
     useEffect(() => {
         const newChart = createChart(chartContainerRef.current, {
