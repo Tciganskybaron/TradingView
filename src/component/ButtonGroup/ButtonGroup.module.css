@@ -6,6 +6,12 @@
 	background-color: #F0F5F9;
 }
 
+.buttonGroup.left {
+	flex-direction: column;
+	margin-right: 10px;
+	height: 120px;
+}
+
 .button {
 	flex: 1;
 	padding: 10px 20px;
@@ -16,6 +22,12 @@
 	cursor: pointer;
 	transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
 	font-size: 14px;
+}
+
+.buttonGroup.left .button {
+	height: 20px;
+	padding: 0 10px;
+	font-size: 12px;
 }
 
 .button:hover {
@@ -33,9 +45,17 @@
 	border-right: 1px solid #ddd;
 }
 
+.buttonGroup.left .button:not(:last-child) {
+	border-bottom: 1px solid #ddd;
+	border-right: none;
+}
 
 @media (max-width: 1000px) {
 	.button {
+		padding: 5px 10px;
+	}
+
+	.buttonGroup.left .button {
 		padding: 5px 10px;
 	}
 }

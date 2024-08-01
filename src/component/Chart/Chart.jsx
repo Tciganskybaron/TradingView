@@ -214,13 +214,13 @@ export function Chart(props) {
     }, []);
 
     return (
-        <div style={{ width: "90%", height: "80%" }}>
-					   <LineSwitcher 
-						    handleAddLineButtonClick={handleAddLineButtonClick} 
-						    handleAddTrendLineButtonClick={handleAddTrendLineButtonClick}
-						    handleRemoveLinesButtonClick={handleRemoveLinesButtonClick} 
-						    selectedValue={isAddingLine ? 'addLine' : isDrawingTrendLine ? 'addTrendLine' : null}
-						 />
+        <div className={styles.container}>
+            <LineSwitcher 
+                handleAddLineButtonClick={handleAddLineButtonClick} 
+                handleAddTrendLineButtonClick={handleAddTrendLineButtonClick}
+                handleRemoveLinesButtonClick={handleRemoveLinesButtonClick} 
+                selectedValue={isAddingLine ? 'addLine' : isDrawingTrendLine ? 'addTrendLine' : null}
+            />
             <div ref={chartContainerRef} className={styles.chart} />
         </div>
     );

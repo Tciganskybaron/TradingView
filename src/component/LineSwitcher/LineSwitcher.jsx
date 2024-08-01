@@ -19,6 +19,7 @@ export function LineSwitcher({handleAddLineButtonClick, handleAddTrendLineButton
         options={LINE} 
         selectedValue={selectedValue} 
         onChange={handleButtonGroupChange} 
+				left
       /> 
 	);
 }
