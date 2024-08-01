@@ -1,5 +1,5 @@
 import { createChart, ColorType } from 'lightweight-charts';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import styles from './Chart.module.css';
 import useChartData from '../../hooks/useChartData';
 import useResize from '../../hooks/useResize';
@@ -17,23 +17,17 @@ export function Chart(props) {
             areaBottomColor = 'rgba(41, 98, 255, 0.28)',
         } = {},
     } = props;
-    const { interval, coin, chartType, isAddingLine, setIsAddingLine, lineSeries, setLineSeries } = useChart((state) => state);
+    const { interval, coin, chartType, isAddingLine, setIsAddingLine } = useChart((state) => state);
 
     const chartContainerRef = useRef();
     const width = useResize();
     const { data, isLoading } = useChartData(interval, coin, chartType, width);
 
-    const [chart, setChart] = useState(null);
-    const [series, setSeries] = useState(null);
+    const chartRef = useRef(null);
+    const seriesRef = useRef(null);
+    const linesRef = useRef([]);
 
     useEffect(() => {
-        const handleResize = () => {
-            if (chart) {
-                chart.applyOptions({ width: chartContainerRef.current.clientWidth, height: chartContainerRef.current.clientHeight });
-                chart.timeScale().fitContent();
-            }
-        };
-
         const newChart = createChart(chartContainerRef.current, {
             layout: {
                 background: { type: ColorType.Solid, color: backgroundColor },
@@ -47,7 +41,14 @@ export function Chart(props) {
         });
 
         newChart.timeScale().fitContent();
-        setChart(newChart);
+        chartRef.current = newChart;
+
+        const handleResize = () => {
+            if (chartRef.current) {
+                chartRef.current.applyOptions({ width: chartContainerRef.current.clientWidth, height: chartContainerRef.current.clientHeight });
+                chartRef.current.timeScale().fitContent();
+            }
+        };
 
         window.addEventListener('resize', handleResize);
 
@@ -58,57 +59,53 @@ export function Chart(props) {
     }, [backgroundColor, textColor]);
 
     useEffect(() => {
-        if (chart) {
-            if (series) {
-                chart.removeSeries(series);
+        if (chartRef.current) {
+            if (seriesRef.current) {
+                chartRef.current.removeSeries(seriesRef.current);
             }
 
             const newSeries = chartType === 'candlestick'
-                ? chart.addCandlestickSeries({
+                ? chartRef.current.addCandlestickSeries({
                     upColor: candleUpColor,
                     downColor: candleDownColor,
                     borderVisible: false,
                     wickUpColor: candleUpColor,
                     wickDownColor: candleDownColor,
                 })
-                : chart.addAreaSeries({ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor });
+                : chartRef.current.addAreaSeries({ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor });
 
-            setSeries(newSeries);
+            seriesRef.current = newSeries;
         }
-    }, [chart, chartType, candleUpColor, candleDownColor, lineColor, areaTopColor, areaBottomColor]);
+    }, [chartType, candleUpColor, candleDownColor, lineColor, areaTopColor, areaBottomColor]);
 
     useEffect(() => {
-        if (series && !isLoading && data.length > 0) {
-            series.setData(data);
-            chart.timeScale().fitContent();
-
-            lineSeries.forEach((line) => {
-                line.series.setData([{ time: data[0].time, value: line.price }, { time: data[data.length - 1].time, value: line.price }]);
-            });
+        if (seriesRef.current && !isLoading && data.length > 0) {
+            seriesRef.current.setData(data);
+            chartRef.current.timeScale().fitContent();
         }
-    }, [series, data, isLoading, lineSeries]);
+    }, [data, isLoading]);
 
     useEffect(() => {
-        if (chart) {
-            chart.applyOptions({ width: chartContainerRef.current.clientWidth, height: chartContainerRef.current.clientHeight });
-            chart.timeScale().fitContent();
+        if (chartRef.current) {
+            chartRef.current.applyOptions({ width: chartContainerRef.current.clientWidth, height: chartContainerRef.current.clientHeight });
+            chartRef.current.timeScale().fitContent();
         }
     }, [width]);
 
-    const addSupportResistanceLine = (event) => {
-        if (chart && isAddingLine) {
+    const addSupportResistanceLine = useCallback((event) => {
+        if (chartRef.current && isAddingLine) {
             const boundingRect = chartContainerRef.current.getBoundingClientRect();
             const y = event.clientY - boundingRect.top;
 
-            const price = series.coordinateToPrice(y);
+            const price = seriesRef.current.coordinateToPrice(y);
             if (price) {
-                const line = chart.addLineSeries();
+                const line = chartRef.current.addLineSeries();
                 line.setData([{ time: data[0].time, value: price }, { time: data[data.length - 1].time, value: price }]);
-                setLineSeries({ series: line, price });
+                linesRef.current.push(line);
             }
             setIsAddingLine(false);
         }
-    };
+    }, [isAddingLine, setIsAddingLine, data]);
 
     useEffect(() => {
         const handleChartClick = (event) => {
@@ -124,15 +121,29 @@ export function Chart(props) {
                 chartContainerRef.current.removeEventListener('click', handleChartClick);
             }
         };
-    }, [chart, data, lineSeries, isAddingLine]);
+    }, [addSupportResistanceLine]);
+
+    useEffect(() => {
+        if (coin) {
+            handleRemoveLinesButtonClick();
+        }
+    }, [coin]);
 
     const handleAddLineButtonClick = () => {
         setIsAddingLine(true);
     };
 
+    const handleRemoveLinesButtonClick = useCallback(() => {
+        linesRef.current.forEach(line => chartRef.current.removeSeries(line));
+        linesRef.current = [];
+    }, []);
+
     return (
         <div style={{ width: "100%", height: "100%" }}>
-            <button onClick={handleAddLineButtonClick}>Add Support/Resistance Line</button>
+            <div>
+                <button onClick={handleAddLineButtonClick}>Add Support/Resistance Line</button>
+                <button onClick={handleRemoveLinesButtonClick}>Remove All Lines</button>
+            </div>
             <div ref={chartContainerRef} className={styles.chart} />
         </div>
     );
