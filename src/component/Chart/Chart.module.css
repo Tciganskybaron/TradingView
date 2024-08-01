@@ -9,3 +9,13 @@
 	height: 100%;
 	flex-grow: 1;
 }
+
+@media (max-width: 1000px) {
+	.container {
+		flex-direction: column;
+	}
+
+	.chart {
+		width: 100% !important;
+	}
+}

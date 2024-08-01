@@ -221,7 +221,7 @@ export function Chart(props) {
                 handleRemoveLinesButtonClick={handleRemoveLinesButtonClick} 
                 selectedValue={isAddingLine ? 'addLine' : isDrawingTrendLine ? 'addTrendLine' : null}
             />
-            <div ref={chartContainerRef} className={styles.chart} />
+            <div ref={chartContainerRef} className={styles.chart}/>
         </div>
     );
 }

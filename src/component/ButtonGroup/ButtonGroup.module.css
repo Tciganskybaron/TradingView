@@ -25,7 +25,7 @@
 }
 
 .buttonGroup.left .button {
-	height: 20px;
+	height: 50px;
 	padding: 0 10px;
 	font-size: 12px;
 }
@@ -55,7 +55,22 @@
 		padding: 5px 10px;
 	}
 
+	.buttonGroup.left {
+		flex-direction: row;
+		height: auto;
+		margin-bottom: 5px;
+		margin-right: 0;
+	}
+
 	.buttonGroup.left .button {
 		padding: 5px 10px;
+		height: 40px;
+		margin-bottom: 5px;
+		border-bottom: none;
+		border-right: 1px solid #ddd;
+	}
+
+	.buttonGroup.left .button:not(:last-child) {
+		margin-right: 5px;
 	}
 }
