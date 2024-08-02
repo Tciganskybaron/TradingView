@@ -25,7 +25,7 @@ export function Chart(props) {
     const chartRef = useRef(null);
     const seriesRef = useRef(null);
     const linesRef = useRef([]);
-    const trendLineSeriesRef = useRef(null);
+    const trendLinesRef = useRef([]);
 
     const width = useResize();
 
@@ -141,12 +141,9 @@ export function Chart(props) {
 
             if (price !== null && time !== null) {
                 setTrendLinePoints([{ time, value: price }]);
-                if (trendLineSeriesRef.current) {
-                    trendLineSeriesRef.current.setData([{ time, value: price }]);
-                } else {
-                    trendLineSeriesRef.current = chartRef.current.addLineSeries();
-                    trendLineSeriesRef.current.setData([{ time, value: price }]);
-                }
+                const newTrendLine = chartRef.current.addLineSeries();
+                newTrendLine.setData([{ time, value: price }]);
+                trendLinesRef.current.push(newTrendLine);
                 disableScroll();
             }
         }
@@ -163,9 +160,9 @@ export function Chart(props) {
 
             if (price !== null && time !== null) {
                 const finalTrendLinePoints = [trendLinePoints[0], { time, value: price }];
-                trendLineSeriesRef.current.setData(finalTrendLinePoints);
-                linesRef.current.push(trendLineSeriesRef.current);
-                setIsDrawingTrendLine(false);
+                const lastTrendLine = trendLinesRef.current[trendLinesRef.current.length - 1];
+                lastTrendLine.setData(finalTrendLinePoints);
+                linesRef.current.push(lastTrendLine);
                 setTrendLinePoints([]);
                 enableScroll();
             }
@@ -183,7 +180,8 @@ export function Chart(props) {
 
             if (price !== null && time !== null) {
                 const updatedPoints = [trendLinePoints[0], { time, value: price }];
-                trendLineSeriesRef.current.setData(updatedPoints);
+                const lastTrendLine = trendLinesRef.current[trendLinesRef.current.length - 1];
+                lastTrendLine.setData(updatedPoints);
             }
         }
     }, [trendLinePoints]);
@@ -240,7 +238,9 @@ export function Chart(props) {
 
     const handleRemoveLinesButtonClick = useCallback(() => {
         linesRef.current.forEach(line => chartRef.current.removeSeries(line));
+        trendLinesRef.current.forEach(line => chartRef.current.removeSeries(line));
         linesRef.current = [];
+        trendLinesRef.current = [];
         enableScroll();
     }, [enableScroll]);
 
