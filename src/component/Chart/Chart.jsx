@@ -19,7 +19,21 @@ export function Chart(props) {
             areaBottomColor = 'rgba(41, 98, 255, 0.28)',
         } = {},
     } = props;
-    const { interval, coin, chartType, isAddingLine, setIsAddingLine, isDrawingTrendLine, setIsDrawingTrendLine, trendLinePoints, setTrendLinePoints } = useChart((state) => state);
+    const {
+        interval,
+        chartType,
+        isAddingLine,
+        setIsAddingLine,
+        isDrawingTrendLine,
+        setIsDrawingTrendLine,
+        trendLinePoints,
+        setTrendLinePoints,
+        addLineSeries,
+        clearLineSeries,
+    } = useChart(state => state);
+
+	  const coin = useChart(state => state.coin)
+		const lineSeries = useChart(state => state.lineSeries)
 
     const chartContainerRef = useRef();
     const chartRef = useRef(null);
@@ -42,13 +56,13 @@ export function Chart(props) {
             localization: {
                 locale: 'en-US',
             },
-						watermark: {
-            color: 'rgba(0, 0, 0, 0.1)',
-            visible: true,
-            text: 'Deluge.Cash',
-            fontSize: 24,
-            horzAlign: 'center',
-            vertAlign: 'center',
+            watermark: {
+                color: 'rgba(0, 0, 0, 0.1)',
+                visible: true,
+                text: 'Deluge.Cash',
+                fontSize: 24,
+                horzAlign: 'center',
+                vertAlign: 'center',
             },
         });
 
@@ -130,13 +144,15 @@ export function Chart(props) {
             const price = seriesRef.current.coordinateToPrice(y);
             if (price) {
                 const line = chartRef.current.addLineSeries();
-                line.setData([{ time: data[0].time, value: price }, { time: data[data.length - 1].time, value: price }]);
+                const lineData = [{ time: data[0].time, value: price }, { time: data[data.length - 1].time, value: price }];
+                line.setData(lineData);
                 linesRef.current.push(line);
+                addLineSeries(coin, { type: 'supportResistance', data: lineData });
             }
             setIsAddingLine(false);
             enableScroll();
         }
-    }, [isAddingLine, setIsAddingLine, data, enableScroll]);
+    }, [isAddingLine, setIsAddingLine, data, enableScroll, coin, addLineSeries]);
 
     const startTrendLine = useCallback((event) => {
         if (chartRef.current) {
@@ -171,12 +187,13 @@ export function Chart(props) {
                 const lastTrendLine = trendLinesRef.current[trendLinesRef.current.length - 1];
                 lastTrendLine.setData(finalTrendLinePoints);
                 linesRef.current.push(lastTrendLine);
+                addLineSeries(coin, { type: 'trendLine', data: finalTrendLinePoints });
                 setTrendLinePoints([]);
                 enableScroll();
-								setIsDrawingTrendLine(false);
+                setIsDrawingTrendLine(false);
             }
         }
-    }, [trendLinePoints, enableScroll]);
+    }, [trendLinePoints, enableScroll, addLineSeries, coin]);
 
     const updateTrendLine = useCallback((event) => {
         if (chartRef.current && trendLinePoints.length === 1) {
@@ -231,7 +248,14 @@ export function Chart(props) {
 
     useEffect(() => {
         if (coin) {
-            handleRemoveLinesButtonClick();
+            removeLines();
+            if (lineSeries[coin]) {
+                lineSeries[coin].forEach(line => {
+                    const newLine = chartRef.current.addLineSeries();
+                    newLine.setData(line.data);
+                    linesRef.current.push(newLine);
+                });
+            }
         }
     }, [coin]);
 
@@ -245,13 +269,27 @@ export function Chart(props) {
         disableScroll();
     };
 
-    const handleRemoveLinesButtonClick = useCallback(() => {
-        linesRef.current.forEach(line => chartRef.current.removeSeries(line));
-        trendLinesRef.current.forEach(line => chartRef.current.removeSeries(line));
+const removeLines = useCallback(() => {
+    if (chartRef.current && linesRef.current) {
+        linesRef.current.forEach(line => {
+            if (line) {
+                chartRef.current.removeSeries(line);
+            }
+        });
         linesRef.current = [];
+    }
+    if (chartRef.current && trendLinesRef.current) {
         trendLinesRef.current = [];
-        enableScroll();
-    }, [enableScroll]);
+    }
+}, [ chartRef, trendLinesRef]);
+
+const handleRemoveLinesButtonClick = useCallback(() => {
+    removeLines();
+    enableScroll();
+    clearLineSeries(coin);
+}, [enableScroll, removeLines, clearLineSeries, coin]);
+
+
 
     return (
         <div className={styles.container}>
