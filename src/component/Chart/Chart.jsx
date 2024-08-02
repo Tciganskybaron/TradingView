@@ -1,5 +1,6 @@
 import { createChart, ColorType } from 'lightweight-charts';
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
+import Hammer from 'hammerjs';
 import styles from './Chart.module.css';
 import useChartData from '../../hooks/useChartData';
 import useResize from '../../hooks/useResize';
@@ -21,15 +22,14 @@ export function Chart(props) {
     const { interval, coin, chartType, isAddingLine, setIsAddingLine, isDrawingTrendLine, setIsDrawingTrendLine, trendLinePoints, setTrendLinePoints } = useChart((state) => state);
 
     const chartContainerRef = useRef();
-		const chartRef = useRef(null);
+    const chartRef = useRef(null);
     const seriesRef = useRef(null);
     const linesRef = useRef([]);
-		const trendLineSeriesRef = useRef(null);
+    const trendLineSeriesRef = useRef(null);
 
     const width = useResize();
 
     const { data, isLoading } = useChartData(interval, coin, chartType, width);
-  
 
     useEffect(() => {
         const newChart = createChart(chartContainerRef.current, {
@@ -96,10 +96,28 @@ export function Chart(props) {
         }
     }, [width]);
 
+    const disableScroll = useCallback(() => {
+        if (chartRef.current) {
+            chartRef.current.applyOptions({
+                handleScroll: false,
+                handleScale: false,
+            });
+        }
+    }, []);
+
+    const enableScroll = useCallback(() => {
+        if (chartRef.current) {
+            chartRef.current.applyOptions({
+                handleScroll: true,
+                handleScale: true,
+            });
+        }
+    }, []);
+
     const addSupportResistanceLine = useCallback((event) => {
         if (chartRef.current && isAddingLine) {
             const boundingRect = chartContainerRef.current.getBoundingClientRect();
-            const y = event.clientY - boundingRect.top;
+            const y = event.center.y - boundingRect.top;
 
             const price = seriesRef.current.coordinateToPrice(y);
             if (price) {
@@ -108,30 +126,37 @@ export function Chart(props) {
                 linesRef.current.push(line);
             }
             setIsAddingLine(false);
+            enableScroll();
         }
-    }, [isAddingLine, setIsAddingLine, data]);
+    }, [isAddingLine, setIsAddingLine, data, enableScroll]);
 
     const startTrendLine = useCallback((event) => {
         if (chartRef.current) {
             const boundingRect = chartContainerRef.current.getBoundingClientRect();
-            const x = event.clientX - boundingRect.left;
-            const y = event.clientY - boundingRect.top;
+            const x = event.center.x - boundingRect.left;
+            const y = event.center.y - boundingRect.top;
 
             const price = seriesRef.current.coordinateToPrice(y);
             const time = chartRef.current.timeScale().coordinateToTime(x);
 
             if (price !== null && time !== null) {
                 setTrendLinePoints([{ time, value: price }]);
-                trendLineSeriesRef.current = chartRef.current.addLineSeries();
+                if (trendLineSeriesRef.current) {
+                    trendLineSeriesRef.current.setData([{ time, value: price }]);
+                } else {
+                    trendLineSeriesRef.current = chartRef.current.addLineSeries();
+                    trendLineSeriesRef.current.setData([{ time, value: price }]);
+                }
+                disableScroll();
             }
         }
-    }, []);
+    }, [disableScroll]);
 
     const finishTrendLine = useCallback((event) => {
         if (chartRef.current && trendLinePoints.length === 1) {
             const boundingRect = chartContainerRef.current.getBoundingClientRect();
-            const x = event.clientX - boundingRect.left;
-            const y = event.clientY - boundingRect.top;
+            const x = event.center.x - boundingRect.left;
+            const y = event.center.y - boundingRect.top;
 
             const price = seriesRef.current.coordinateToPrice(y);
             const time = chartRef.current.timeScale().coordinateToTime(x);
@@ -142,15 +167,16 @@ export function Chart(props) {
                 linesRef.current.push(trendLineSeriesRef.current);
                 setIsDrawingTrendLine(false);
                 setTrendLinePoints([]);
+                enableScroll();
             }
         }
-    }, [trendLinePoints]);
+    }, [trendLinePoints, enableScroll]);
 
     const updateTrendLine = useCallback((event) => {
         if (chartRef.current && trendLinePoints.length === 1) {
             const boundingRect = chartContainerRef.current.getBoundingClientRect();
-            const x = event.clientX - boundingRect.left;
-            const y = event.clientY - boundingRect.top;
+            const x = event.center.x - boundingRect.left;
+            const y = event.center.y - boundingRect.top;
 
             const price = seriesRef.current.coordinateToPrice(y);
             const time = chartRef.current.timeScale().coordinateToTime(x);
@@ -162,37 +188,39 @@ export function Chart(props) {
         }
     }, [trendLinePoints]);
 
-    useEffect(() => {
-        const handleChartClick = (event) => {
-            if (isAddingLine) {
-                addSupportResistanceLine(event);
-            } else if (isDrawingTrendLine) {
-                if (trendLinePoints.length === 0) {
-                    startTrendLine(event);
-                } else if (trendLinePoints.length === 1) {
-                    finishTrendLine(event);
-                }
+    const handleChartClick = (event) => {
+        if (isAddingLine) {
+            addSupportResistanceLine(event);
+        } else if (isDrawingTrendLine) {
+            if (trendLinePoints.length === 0) {
+                startTrendLine(event);
+            } else if (trendLinePoints.length === 1) {
+                finishTrendLine(event);
             }
-        };
-
-        const handleMouseMove = (event) => {
-            if (isDrawingTrendLine && trendLinePoints.length === 1) {
-                updateTrendLine(event);
-            }
-        };
-
-        if (chartContainerRef.current) {
-            chartContainerRef.current.addEventListener('click', handleChartClick);
-            chartContainerRef.current.addEventListener('mousemove', handleMouseMove);
         }
+    };
+
+    const handleMouseMove = (event) => {
+        if (isDrawingTrendLine && trendLinePoints.length === 1) {
+            updateTrendLine(event);
+        }
+    };
+
+    useEffect(() => {
+        const hammer = new Hammer(chartContainerRef.current);
+
+        hammer.on('tap', (event) => {
+            handleChartClick(event);
+        });
+
+        hammer.on('panmove', (event) => {
+            handleMouseMove(event);
+        });
 
         return () => {
-            if (chartContainerRef.current) {
-                chartContainerRef.current.removeEventListener('click', handleChartClick);
-                chartContainerRef.current.removeEventListener('mousemove', handleMouseMove);
-            }
+            hammer.destroy();
         };
-    }, [addSupportResistanceLine, startTrendLine, finishTrendLine, updateTrendLine, isAddingLine, isDrawingTrendLine, trendLinePoints]);
+    }, [handleChartClick, handleMouseMove]);
 
     useEffect(() => {
         if (coin) {
@@ -202,16 +230,19 @@ export function Chart(props) {
 
     const handleAddLineButtonClick = () => {
         setIsAddingLine(true);
+        disableScroll();
     };
 
     const handleAddTrendLineButtonClick = () => {
         setIsDrawingTrendLine(true);
+        disableScroll();
     };
 
     const handleRemoveLinesButtonClick = useCallback(() => {
         linesRef.current.forEach(line => chartRef.current.removeSeries(line));
         linesRef.current = [];
-    }, []);
+        enableScroll();
+    }, [enableScroll]);
 
     return (
         <div className={styles.container}>
@@ -221,7 +252,9 @@ export function Chart(props) {
                 handleRemoveLinesButtonClick={handleRemoveLinesButtonClick} 
                 selectedValue={isAddingLine ? 'addLine' : isDrawingTrendLine ? 'addTrendLine' : null}
             />
-            <div ref={chartContainerRef} className={styles.chart}/>
+            <div ref={chartContainerRef} className={styles.chart}>
+                <div className="click-area" />
+            </div>
         </div>
     );
 }
