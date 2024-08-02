@@ -41,7 +41,15 @@ export function Chart(props) {
             height: chartContainerRef.current.clientHeight,
             localization: {
                 locale: 'en-US',
-            }
+            },
+						watermark: {
+            color: 'rgba(0, 0, 0, 0.1)',
+            visible: true,
+            text: 'Deluge.Cash',
+            fontSize: 24,
+            horzAlign: 'center',
+            vertAlign: 'center',
+            },
         });
 
         newChart.timeScale().fitContent();
@@ -163,6 +171,7 @@ export function Chart(props) {
                 const lastTrendLine = trendLinesRef.current[trendLinesRef.current.length - 1];
                 lastTrendLine.setData(finalTrendLinePoints);
                 linesRef.current.push(lastTrendLine);
+								setIsDrawingTrendLine(false);
                 setTrendLinePoints([]);
                 enableScroll();
             }
