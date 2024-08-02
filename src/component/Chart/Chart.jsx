@@ -171,9 +171,9 @@ export function Chart(props) {
                 const lastTrendLine = trendLinesRef.current[trendLinesRef.current.length - 1];
                 lastTrendLine.setData(finalTrendLinePoints);
                 linesRef.current.push(lastTrendLine);
-								setIsDrawingTrendLine(false);
                 setTrendLinePoints([]);
                 enableScroll();
+								setIsDrawingTrendLine(false);
             }
         }
     }, [trendLinePoints, enableScroll]);
