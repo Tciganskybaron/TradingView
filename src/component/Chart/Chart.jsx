@@ -82,7 +82,7 @@ export function Chart(props) {
             window.removeEventListener('resize', handleResize);
             newChart.remove();
         };
-    }, [backgroundColor, textColor]);
+    }, []);
 
     useEffect(() => {
         if (chartRef.current) {
@@ -102,14 +102,14 @@ export function Chart(props) {
 
             seriesRef.current = newSeries;
         }
-    }, [chartType, candleUpColor, candleDownColor, lineColor, areaTopColor, areaBottomColor]);
+    }, [chartType]);
 
     useEffect(() => {
         if (seriesRef.current && !isLoading && data.length > 0) {
             seriesRef.current.setData(data);
             chartRef.current.timeScale().fitContent();
         }
-    }, [data, isLoading]);
+    }, [data, isLoading, seriesRef]);
 
     useEffect(() => {
         if (chartRef.current) {
